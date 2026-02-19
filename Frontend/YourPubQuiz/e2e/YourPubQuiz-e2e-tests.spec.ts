@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Default quiz page', async ({ page }) => {
-  await page.goto('http://localhost:4200/');
+  await page.goto('/');
 
   await expect(page.getByRole('heading', { name: 'Your PubQuiz', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'The only place for all your PubQuizing needs', exact: true })).toBeVisible();
@@ -9,7 +9,7 @@ test('Default quiz page', async ({ page }) => {
 });
 
 test('Create new basic quiz', async ({ page }) => {
-  await page.goto('http://localhost:4200/');
+  await page.goto('/');
 
   await page.getByRole('button', { name: 'New PubQuiz' }).click();
 
@@ -31,7 +31,7 @@ test('Create new basic quiz', async ({ page }) => {
 });
 
 test('Create new quiz with settings', async ({ page }) => {
-  await page.goto('http://localhost:4200/');
+  await page.goto('/');
 
   const [categories] = await Promise.all([
     page.waitForResponse('http://localhost:5025/Quiz/GetCategories'),
@@ -70,7 +70,7 @@ test('Create new quiz with settings', async ({ page }) => {
 });
 
 test('Create and complete quiz', async ({ page }) => {
-  await page.goto('http://localhost:4200/');
+  await page.goto('/');
 
   const newQuizButton = page.getByRole('button', { name: 'New PubQuiz' })
   await expect(newQuizButton).toBeVisible();
