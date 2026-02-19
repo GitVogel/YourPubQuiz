@@ -43,6 +43,11 @@ public static class Program
         app.UseHttpsRedirection();
         app.UseAuthorization();
         app.UseCors("AngularClient");
+        
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
+        app.MapFallbackToFile("index.html");
+        
         app.MapControllers();
 
         app.Run();
