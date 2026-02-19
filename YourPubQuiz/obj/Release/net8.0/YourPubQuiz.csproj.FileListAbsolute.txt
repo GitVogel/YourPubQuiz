@@ -30,3 +30,5 @@ C:\Users\mv.SOLTEGRO\Documents\Persoonlijk\Code\YourPubQuiz\YourPubQuiz\obj\Rele
 C:\Users\mv.SOLTEGRO\Documents\Persoonlijk\Code\YourPubQuiz\YourPubQuiz\obj\Release\net8.0\YourPubQuiz.pdb
 C:\Users\mv.SOLTEGRO\Documents\Persoonlijk\Code\YourPubQuiz\YourPubQuiz\obj\Release\net8.0\YourPubQuiz.genruntimeconfig.cache
 C:\Users\mv.SOLTEGRO\Documents\Persoonlijk\Code\YourPubQuiz\YourPubQuiz\obj\Release\net8.0\ref\YourPubQuiz.dll
+C:\Users\mv.SOLTEGRO\Documents\Persoonlijk\Code\YourPubQuiz\YourPubQuiz\bin\Release\net8.0\YourPubQuiz.staticwebassets.runtime.json
+C:\Users\mv.SOLTEGRO\Documents\Persoonlijk\Code\YourPubQuiz\YourPubQuiz\obj\Release\net8.0\YourPubQuiz.sourcelink.json
