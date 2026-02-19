@@ -1,0 +1,57 @@
+<p-dialog header="New PubQuiz" [(visible)]="displayDialog" [style]="{ width: '25rem'}">
+  <ng-template #header>
+    <span class="font-bold text-lg">New PubQuiz settings</span>
+  </ng-template>
+  <ng-template #content [formGroup]="newPubQuizForm">
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1">
+        <label>Amount of questions:</label>
+        <p-inputNumber formControlName="amountOfQuestions" [min]="1" [max]="50"/>
+        @if (newPubQuizForm.get('amountOfQuestions')?.invalid) {
+          <small>At least 1 and maximum 50 questions.</small>
+        }
+      </div>
+      <div>
+        <small>Optional settings:</small>
+      </div>
+      <div class="flex flex-col gap-1">
+        <label>Category:</label>
+        <p-select
+          formControlName="category"
+          [showClear]="true"
+          [options]="categories"
+          optionLabel="name"
+          placeholder="Choose a category"
+          appendTo="body"
+        />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label>Difficulty:</label>
+        <p-select
+          formControlName="difficulty"
+          [showClear]="true"
+          [options]="allDifficulties"
+          optionLabel="userFriendlyName"
+          placeholder="Choose a difficulty"
+          appendTo="body"
+        />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label>Type:</label>
+        <p-select
+          formControlName="type"
+          [showClear]="true"
+          [options]="allTypes"
+          optionLabel="userFriendlyName"
+          placeholder="Choose a type"
+          appendTo="body"
+        />
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #footer>
+    <div class="flex justify-end gap-4">
+      <p-button label="Begin PubQuiz" (click)="createNewPubQuiz()" [disabled]="newPubQuizForm.invalid"/>
+    </div>
+  </ng-template>
+</p-dialog>

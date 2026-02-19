@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourPubQuiz", "YourPubQuiz\YourPubQuiz.csproj", "{97DC8DBE-5A8D-4439-B741-9C36BF299182}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E8B885D7-20CB-4249-B80C-0CBFBBF83638}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YourPubQuiz.Tests", "YourPubQuiz.Tests\YourPubQuiz.Tests.csproj", "{3DD02AC6-50B5-41BE-ABF7-A4F5BA241454}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{97DC8DBE-5A8D-4439-B741-9C36BF299182}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97DC8DBE-5A8D-4439-B741-9C36BF299182}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97DC8DBE-5A8D-4439-B741-9C36BF299182}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97DC8DBE-5A8D-4439-B741-9C36BF299182}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DD02AC6-50B5-41BE-ABF7-A4F5BA241454}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DD02AC6-50B5-41BE-ABF7-A4F5BA241454}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DD02AC6-50B5-41BE-ABF7-A4F5BA241454}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DD02AC6-50B5-41BE-ABF7-A4F5BA241454}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3DD02AC6-50B5-41BE-ABF7-A4F5BA241454} = {E8B885D7-20CB-4249-B80C-0CBFBBF83638}
+	EndGlobalSection
+EndGlobal

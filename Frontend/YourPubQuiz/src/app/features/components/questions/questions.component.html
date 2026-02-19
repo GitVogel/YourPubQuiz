@@ -1,0 +1,26 @@
+<div>
+  @if (allQuestions.length > 0) {
+    @for (question of allQuestions; track question.id; let i = $index) {
+      <div class="flex justify-center-safe m-4">
+        <p-panel header="Question {{i + 1}}"  class="w-2/4">
+          <p >{{question.question}}</p>
+          <p>Answers:</p>
+          @for (answer of question.possibleAnswer; track answer; let i = $index) {
+            <div class="flex items-center gap-2 my-1">
+              <p-radioButton
+                [value]="answer"
+                [(ngModel)]="selectedAnswers[question.id]"
+                [inputId]="question.id"></p-radioButton>
+              <label [for]="question.id">{{ answer }}</label>
+            </div>
+          }
+        </p-panel>
+      </div>
+    } @empty {
+      <p>No questions available</p>
+    }
+  }
+</div>
+<div class="flex justify-center-safe my-4">
+  <p-button label="Submit Answers" (click)="submitAnswers()" [hidden]="!isActive" [disabled]="isSubmitDisabled" ></p-button>
+</div>

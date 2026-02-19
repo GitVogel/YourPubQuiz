@@ -1,0 +1,17 @@
+<div>
+  <div class="justify-center-safe text-center my-8">
+    <h1 class="text-3xl font-bold underline">Your PubQuiz</h1>
+    <h2>The only place for all your PubQuizing needs</h2>
+  </div>
+  <div class="card flex justify-center">
+    <div class="flex flex-wrap gap-4">
+      @if (!quizIsActive) {
+        <p-button label="New PubQuiz" (click)="newPubQuiz()" />
+      }
+    </div>
+  </div>
+</div>
+
+<app-quiz-dialog (newQuizCreated)="getNewQuestions($event)"></app-quiz-dialog>
+<app-questions [allQuestions]="questions" [isActive]="quizIsActive" (quizResults)="showQuizResults($event)"></app-questions>
+<app-results-dialog [quizResult]="quizResult" [showResults]="showQuizResultDialog"></app-results-dialog>
