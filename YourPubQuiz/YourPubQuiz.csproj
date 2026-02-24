@@ -14,8 +14,4 @@
         <InternalsVisibleTo Include="YourPubQuiz.Tests" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="wwwroot\" />
-    </ItemGroup>
-
 </Project>

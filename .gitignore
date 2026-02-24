@@ -1,0 +1,69 @@
+#######################################
+# .NET
+#######################################
+
+# Build results
+bin/
+obj/
+out/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# Logs
+*.log
+
+# NuGet
+*.nupkg
+.nuget/
+packages/
+
+# Azure
+*.azurePubxml
+
+#######################################
+# Angular / Node
+#######################################
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+
+# Angular build
+dist/
+.tmp/
+out-tsc/
+coverage/
+
+# Environment files
+src/environments/*.local.ts
+
+#######################################
+# OS Files
+#######################################
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Mac
+.DS_Store
+
+#######################################
+# IDE / Editor
+#######################################
+
+.vscode/
+*.swp
+*.swo
