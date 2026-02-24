@@ -2,16 +2,16 @@
 using System.Net.Http.Json;
 using Moq;
 using Moq.Protected;
-using YourPubQuiz.Controllers;
 using YourPubQuiz.Models;
+using YourPubQuiz.Services;
 using YourPubQuiz.Singletons;
 using YourPubQuiz.Viewmodels;
 
-namespace YourPubQuiz.Test.Controllers;
+namespace YourPubQuiz.Test.Services;
 
-public class QuizControllerTests
+public class OpenTdbServiceTests
 {
-    private QuizController _quizController;
+    private OpenTdbService _openTdbService;
     private QuestionData _questionData;
     private Mock<HttpMessageHandler> _httpMessageHandlerMock;
 
@@ -66,7 +66,7 @@ public class QuizControllerTests
                 Content = JsonContent.Create(mockCategories)
             }));
         
-        _quizController = new QuizController(httpClient, _questionData);
+        _openTdbService = new OpenTdbService(httpClient, _questionData);
     }
 
     [Test] 
@@ -76,9 +76,9 @@ public class QuizControllerTests
         var validAmountIsOne = 1;
         var validAmountIsFifty = 50;
         
-        Assert.DoesNotThrow(() => QuizController.IsValidQuestionAmount(validAmount));
-        Assert.DoesNotThrow(() => QuizController.IsValidQuestionAmount(validAmountIsOne));
-        Assert.DoesNotThrow(() => QuizController.IsValidQuestionAmount(validAmountIsFifty));
+        Assert.DoesNotThrow(() => OpenTdbService.IsValidQuestionAmount(validAmount));
+        Assert.DoesNotThrow(() => OpenTdbService.IsValidQuestionAmount(validAmountIsOne));
+        Assert.DoesNotThrow(() => OpenTdbService.IsValidQuestionAmount(validAmountIsFifty));
     }
     
     [Test] 
@@ -88,9 +88,9 @@ public class QuizControllerTests
         var invalidAmountIsNegative = -5;
         var invalidAmountIsTooHigh = 51;
         
-        var isZeroException = Assert.Throws<ArgumentException>(() => QuizController.IsValidQuestionAmount(invalidAmountIsZero));
-        var isNegativeException = Assert.Throws<ArgumentException>(() => QuizController.IsValidQuestionAmount(invalidAmountIsNegative));
-        var isHighException = Assert.Throws<ArgumentException>(() => QuizController.IsValidQuestionAmount(invalidAmountIsTooHigh));
+        var isZeroException = Assert.Throws<ArgumentException>(() => OpenTdbService.IsValidQuestionAmount(invalidAmountIsZero));
+        var isNegativeException = Assert.Throws<ArgumentException>(() => OpenTdbService.IsValidQuestionAmount(invalidAmountIsNegative));
+        var isHighException = Assert.Throws<ArgumentException>(() => OpenTdbService.IsValidQuestionAmount(invalidAmountIsTooHigh));
         
         Assert.That(isZeroException.Message, Is.EqualTo("Invalid question amount. Must be between 1 and 50."));
         Assert.That(isNegativeException.Message, Is.EqualTo("Invalid question amount. Must be between 1 and 50."));
@@ -104,9 +104,9 @@ public class QuizControllerTests
         var validCategorMythology = QuestionCategory.Mythology;
         var validCategoryCartoons = QuestionCategory.EntertainmentCartoonAnimations;
         
-        Assert.DoesNotThrowAsync(async () => await _quizController.IsValidCategory((int)validCategoryGeneralKnowledge));
-        Assert.DoesNotThrowAsync(async () => await _quizController.IsValidCategory((int)validCategorMythology));
-        Assert.DoesNotThrowAsync(async () => await _quizController.IsValidCategory((int)validCategoryCartoons));
+        Assert.DoesNotThrowAsync(async () => await _openTdbService.IsValidCategory((int)validCategoryGeneralKnowledge));
+        Assert.DoesNotThrowAsync(async () => await _openTdbService.IsValidCategory((int)validCategorMythology));
+        Assert.DoesNotThrowAsync(async () => await _openTdbService.IsValidCategory((int)validCategoryCartoons));
     }
     
     [Test] 
@@ -115,8 +115,8 @@ public class QuizControllerTests
         var invalidCategoryNegative = -1;
         var invalidCategoryTooHigh = 999;
         
-        var isNegativeException = Assert.ThrowsAsync<ArgumentException>(async () => await _quizController.IsValidCategory(invalidCategoryNegative));
-        var isHighException = Assert.ThrowsAsync<ArgumentException>(async () => await _quizController.IsValidCategory(invalidCategoryTooHigh));
+        var isNegativeException = Assert.ThrowsAsync<ArgumentException>(async () => await _openTdbService.IsValidCategory(invalidCategoryNegative));
+        var isHighException = Assert.ThrowsAsync<ArgumentException>(async () => await _openTdbService.IsValidCategory(invalidCategoryTooHigh));
         
         Assert.That(isNegativeException.Message, Is.EqualTo("Invalid category ID."));
         Assert.That(isHighException.Message, Is.EqualTo("Invalid category ID."));
@@ -129,9 +129,9 @@ public class QuizControllerTests
         var validDifficultyMedium = QuestionDifficulty.Medium;
         var validDifficultyHard = QuestionDifficulty.Hard;
         
-        Assert.DoesNotThrow(() => QuizController.IsValidDifficulty(validDifficultyEasy));
-        Assert.DoesNotThrow(() => QuizController.IsValidDifficulty(validDifficultyMedium));
-        Assert.DoesNotThrow(() => QuizController.IsValidDifficulty(validDifficultyHard));
+        Assert.DoesNotThrow(() => OpenTdbService.IsValidDifficulty(validDifficultyEasy));
+        Assert.DoesNotThrow(() => OpenTdbService.IsValidDifficulty(validDifficultyMedium));
+        Assert.DoesNotThrow(() => OpenTdbService.IsValidDifficulty(validDifficultyHard));
     }
     
     [Test] 
@@ -140,8 +140,8 @@ public class QuizControllerTests
         QuestionDifficulty? invalidDifficultyNull = null;
         var invalidDifficultyInvalidValue = (QuestionDifficulty)999;
         
-        var isNullException = Assert.Throws<ArgumentException>(() => QuizController.IsValidDifficulty(invalidDifficultyNull));
-        var isInvalidValueException = Assert.Throws<ArgumentException>(() => QuizController.IsValidDifficulty(invalidDifficultyInvalidValue));
+        var isNullException = Assert.Throws<ArgumentException>(() => OpenTdbService.IsValidDifficulty(invalidDifficultyNull));
+        var isInvalidValueException = Assert.Throws<ArgumentException>(() => OpenTdbService.IsValidDifficulty(invalidDifficultyInvalidValue));
         
         Assert.That(isNullException.Message, Is.EqualTo("Invalid difficulty. Must be Easy, Medium, or Hard."));
         Assert.That(isInvalidValueException.Message, Is.EqualTo("Invalid difficulty. Must be Easy, Medium, or Hard."));
@@ -153,8 +153,8 @@ public class QuizControllerTests
         var validTypeMultiple = QuestionType.Multiple;
         var validTypeBoolean = QuestionType.Boolean;
         
-        Assert.DoesNotThrow(() => QuizController.IsValidType(validTypeMultiple));
-        Assert.DoesNotThrow(() => QuizController.IsValidType(validTypeBoolean));
+        Assert.DoesNotThrow(() => OpenTdbService.IsValidType(validTypeMultiple));
+        Assert.DoesNotThrow(() => OpenTdbService.IsValidType(validTypeBoolean));
     }
     
     [Test] 
@@ -163,8 +163,8 @@ public class QuizControllerTests
         QuestionType? invalidTypeNull = null;
         var invalidTypeInvalidValue = (QuestionType)999;
         
-        var isNullException = Assert.Throws<ArgumentException>(() => QuizController.IsValidType(invalidTypeNull));
-        var isInvalidValueException = Assert.Throws<ArgumentException>(() => QuizController.IsValidType(invalidTypeInvalidValue));
+        var isNullException = Assert.Throws<ArgumentException>(() => OpenTdbService.IsValidType(invalidTypeNull));
+        var isInvalidValueException = Assert.Throws<ArgumentException>(() => OpenTdbService.IsValidType(invalidTypeInvalidValue));
         
         Assert.That(isNullException.Message, Is.EqualTo("Invalid type. Must be Multiple or Boolean."));
         Assert.That(isInvalidValueException.Message, Is.EqualTo("Invalid type. Must be Multiple or Boolean."));
@@ -179,7 +179,7 @@ public class QuizControllerTests
             new () { Id = "222", Answer = "False" }
         };
 
-        var result = _quizController.CheckAnswers(userAnswers);
+        var result = _openTdbService.CheckAnswers(userAnswers);
 
         Assert.That(result.TotalQuestions, Is.EqualTo(2));
         Assert.That(result.CorrectAnswers, Is.EqualTo(2));
@@ -196,7 +196,7 @@ public class QuizControllerTests
             new () { Id = "222", Answer = "False" }
         };
 
-        var result = _quizController.CheckAnswers(userAnswers);
+        var result = _openTdbService.CheckAnswers(userAnswers);
 
         Assert.That(result.TotalQuestions, Is.EqualTo(2));
         Assert.That(result.CorrectAnswers, Is.EqualTo(1));
@@ -213,7 +213,7 @@ public class QuizControllerTests
             new () { Id = "222", Answer = "True" }
         };
 
-        var result = _quizController.CheckAnswers(userAnswers);
+        var result = _openTdbService.CheckAnswers(userAnswers);
 
         Assert.That(result.TotalQuestions, Is.EqualTo(2));
         Assert.That(result.CorrectAnswers, Is.EqualTo(0));

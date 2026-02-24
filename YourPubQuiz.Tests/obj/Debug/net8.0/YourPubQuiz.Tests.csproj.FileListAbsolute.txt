@@ -111,3 +111,5 @@ C:\Users\mv.SOLTEGRO\Documents\Persoonlijk\Code\YourPubQuiz\YourPubQuiz.Tests\ob
 C:\Users\mv.SOLTEGRO\Documents\Persoonlijk\Code\YourPubQuiz\YourPubQuiz.Tests\obj\Debug\net8.0\YourPubQuiz.Tests.pdb
 C:\Users\mv.SOLTEGRO\Documents\Persoonlijk\Code\YourPubQuiz\YourPubQuiz.Tests\obj\Debug\net8.0\YourPubQuiz.Tests.genruntimeconfig.cache
 C:\Users\mv.SOLTEGRO\Documents\Persoonlijk\Code\YourPubQuiz\YourPubQuiz.Tests\obj\Debug\net8.0\ref\YourPubQuiz.Tests.dll
+C:\Users\mv.SOLTEGRO\Documents\Persoonlijk\Code\YourPubQuiz\YourPubQuiz.Tests\bin\Debug\net8.0\YourPubQuiz.staticwebassets.runtime.json
+C:\Users\mv.SOLTEGRO\Documents\Persoonlijk\Code\YourPubQuiz\YourPubQuiz.Tests\obj\Debug\net8.0\YourPubQuiz.Tests.sourcelink.json

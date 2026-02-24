@@ -1,4 +1,5 @@
 
+using YourPubQuiz.Services;
 using YourPubQuiz.Singletons;
 
 namespace YourPubQuiz;
@@ -12,6 +13,7 @@ public static class Program
         // Add services to the container.
         builder.Services.AddControllers();
         builder.Services.AddHttpClient();
+        builder.Services.AddScoped<OpenTdbService>();
         builder.Services.AddSingleton<QuestionData>();
         
         builder.Services.AddEndpointsApiExplorer();
