@@ -6,7 +6,7 @@ Welkom to YourPubQuiz. The only place for all your pubquizing needs.
 
 
 - Clone the repository to your local machine
-- Navigate to ```...\YourPubQuiz\bin\Release\net8.0\publish```
+- Navigate to ```...\Release```
 - Right click in the folder and select "Open in Terminal". (Or open a terminal and navigate to the folder)
 - Paste this command in the terminal: ```.\YourPubQuiz.exe --urls "http://localhost:5025"```
 - You should see the message: ```Now listening on: http://localhost:5025``` in the terminal.
