@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Category} from "../models/category";
 import {BackendSettings} from "../settings/backendSettings";
-import {Question} from "../models/question";
 import {FormGroup} from "@angular/forms";
 import {Answer} from "../models/answer";
+import {QuizData} from "../models/quizData";
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +28,7 @@ export class QuestionApiService {
     };
 
     return this.httpClient
-      .get<Question[]>(this.baseUrl + '/GetQuestions', options);
+      .get<QuizData>(this.baseUrl + '/GetQuestions', options);
   }
 
   public getQuestionsCategories() {

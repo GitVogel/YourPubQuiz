@@ -1,8 +1,8 @@
 ﻿using System.Net;
+using Microsoft.Extensions.Caching.Memory;
 using YourPubQuiz.Models;
 using YourPubQuiz.OpenTdbApi;
 using YourPubQuiz.Response;
-using YourPubQuiz.Singletons;
 using YourPubQuiz.Viewmodels;
 
 namespace YourPubQuiz.Services;
@@ -10,12 +10,12 @@ namespace YourPubQuiz.Services;
 public class OpenTdbService
 {
     private readonly HttpClient _client;
-    private readonly QuestionData _questionData;
+    private readonly IMemoryCache _cache;
 
-    public OpenTdbService(HttpClient client, QuestionData questionData)
+    public OpenTdbService(HttpClient client, IMemoryCache cache)
     {
         _client = client;
-        _questionData = questionData;
+        _cache = cache;
     }
 
     /// <summary>
@@ -28,10 +28,13 @@ public class OpenTdbService
     /// <param name="type"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public async Task<List<Question>> GetQuestions(int questionAmount, QuestionCategory? category,
+    public async Task<QuizData> GetQuestions(int questionAmount, QuestionCategory? category,
         QuestionDifficulty? difficulty, QuestionType? type)
     {
-        _questionData.Questions.Clear();
+        var questionData = new QuizData
+        {
+            Questions = []
+        };
 
         IsValidQuestionAmount(questionAmount);
         var url = $"https://opentdb.com/api.php?amount={questionAmount}";
@@ -66,7 +69,7 @@ public class OpenTdbService
                 .OrderBy(_ => rnd.Next())
                 .ToList();
 
-            _questionData.Questions.Add(new Question
+            questionData.Questions.Add(new Question
             {
                 Id = question.Id,
                 QuestionText = WebUtility.HtmlDecode(question.QuestionText),
@@ -75,7 +78,7 @@ public class OpenTdbService
             });
         }
         
-        return _questionData.Questions;
+        return questionData;
     }
     
     /// <summary>
@@ -103,33 +106,39 @@ public class OpenTdbService
     {
         var quizResult = new QuizResult
         {
-            TotalQuestions = _questionData.Questions.Count,
+            TotalQuestions = 0,
             CorrectAnswers = 0,
             QuestionResults = []
         };
-        
-        foreach (var answer in answers)
-        {
-            var question = _questionData.Questions.FirstOrDefault(q => q.Id == answer.Id);
-            if (question is null)
-            {
-                continue;
-            }
-            bool isCorrect = question.CorrectAnswer == answer.Answer;
-            if (isCorrect)
-            {
-                quizResult.CorrectAnswers++;
-            }
-            
-            quizResult.QuestionResults.Add(new QuestionResultDetails
-            {
-                QuestionId = question.Id,
-                QuestionText = question.QuestionText,
-                IsCorrect = isCorrect,
-                UserAnswer = answer.Answer,
-                CorrectAnswer = question.CorrectAnswer
-            });
-        }
+        // var quizResult = new QuizResult
+        // {
+        //     TotalQuestions = _questionData.Questions.Count,
+        //     CorrectAnswers = 0,
+        //     QuestionResults = []
+        // };
+        //
+        // foreach (var answer in answers)
+        // {
+        //     var question = _questionData.Questions.FirstOrDefault(q => q.Id == answer.Id);
+        //     if (question is null)
+        //     {
+        //         continue;
+        //     }
+        //     bool isCorrect = question.CorrectAnswer == answer.Answer;
+        //     if (isCorrect)
+        //     {
+        //         quizResult.CorrectAnswers++;
+        //     }
+        //     
+        //     quizResult.QuestionResults.Add(new QuestionResultDetails
+        //     {
+        //         QuestionId = question.Id,
+        //         QuestionText = question.QuestionText,
+        //         IsCorrect = isCorrect,
+        //         UserAnswer = answer.Answer,
+        //         CorrectAnswer = question.CorrectAnswer
+        //     });
+        // }
 
         return quizResult;
     }

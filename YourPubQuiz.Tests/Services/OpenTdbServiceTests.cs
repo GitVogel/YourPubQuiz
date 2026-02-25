@@ -4,7 +4,6 @@ using Moq;
 using Moq.Protected;
 using YourPubQuiz.Models;
 using YourPubQuiz.Services;
-using YourPubQuiz.Singletons;
 using YourPubQuiz.Viewmodels;
 
 namespace YourPubQuiz.Test.Services;
@@ -12,13 +11,13 @@ namespace YourPubQuiz.Test.Services;
 public class OpenTdbServiceTests
 {
     private OpenTdbService _openTdbService;
-    private QuestionData _questionData;
+    private QuizData _quizData;
     private Mock<HttpMessageHandler> _httpMessageHandlerMock;
 
     [SetUp]
     public void Setup()
     {
-        _questionData = new QuestionData
+        _quizData = new QuizData
         {
             Questions =
             [
@@ -66,7 +65,7 @@ public class OpenTdbServiceTests
                 Content = JsonContent.Create(mockCategories)
             }));
         
-        _openTdbService = new OpenTdbService(httpClient, _questionData);
+        _openTdbService = new OpenTdbService(httpClient, _quizData);
     }
 
     [Test] 
