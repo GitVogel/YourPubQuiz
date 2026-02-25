@@ -1,6 +1,6 @@
 <div>
-  @if (allQuestions.length > 0) {
-    @for (question of allQuestions; track question.id; let i = $index) {
+  @if (quizData.questions.length > 0) {
+    @for (question of quizData.questions; track question.id; let i = $index) {
       <div class="flex justify-center-safe m-4">
         <p-panel header="Question {{i + 1}}"  class="w-2/4">
           <p >{{question.question}}</p>

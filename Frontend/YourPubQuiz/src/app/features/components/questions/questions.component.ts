@@ -1,12 +1,12 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {Question} from "../../../core/models/question";
 import {Panel} from "primeng/panel";
 import {RadioButton} from "primeng/radiobutton";
 import {FormsModule} from "@angular/forms";
 import {Button} from "primeng/button";
-import {Answer} from "../../../core/models/answer";
 import {QuestionApiService} from "../../../core/services/question-api-service";
 import {QuizResult} from "../../../core/models/quizResult";
+import {QuizData} from "../../../core/models/quizData";
+import {QuizAnswers} from "../../../core/models/quizAnswers";
 
 @Component({
   selector: 'app-questions',
@@ -20,27 +20,28 @@ import {QuizResult} from "../../../core/models/quizResult";
   styleUrl: './questions.component.scss',
 })
 export class QuestionsComponent{
-  @Input() allQuestions: Question[] = [];
+  @Input() quizData: QuizData = { } as QuizData;
   @Input() isActive: boolean = false;
   @Output() quizResults = new EventEmitter<QuizResult>();
 
   selectedAnswers: Record<string, string> = {};
-  answers: Answer[] = []
+  quizAnswers: QuizAnswers = { id: "", answers: [] } as QuizAnswers;
 
   /// Checks if the submit button should be disabled based on whether all questions have been answered.
   get isSubmitDisabled(): boolean {
-    return Object.keys(this.selectedAnswers).length !== this.allQuestions.length;
+    return Object.keys(this.selectedAnswers).length !== this.quizData.questions.length;
   }
 
   constructor(private readonly questionApiService: QuestionApiService) {}
 
   /// Submits the selected answers to the backend for checking and emits the results to quiz-page.
   public submitAnswers() {
-    this.answers = Object.entries(this.selectedAnswers).map(([id, answer]) => ({
+    this.quizAnswers.id = this.quizData.id;
+    this.quizAnswers.answers = Object.entries(this.selectedAnswers).map(([id, answer]) => ({
       id,
       answer
     }));
-    this.questionApiService.checkAnswer(this.answers).subscribe({
+    this.questionApiService.checkAnswer(this.quizAnswers).subscribe({
       next: (response) =>
       {
         this.selectedAnswers = {};

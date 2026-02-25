@@ -25,9 +25,10 @@ test('Create new basic quiz', async ({ page }) => {
     page.waitForResponse('http://localhost:5025/Quiz/GetQuestions?questionAmount=5&category=&difficulty=&type='),
     dialog.getByRole('button', { name: 'Begin PubQuiz' }).click(),
   ]);
+  const quizData = await response.json();
 
   expect(response.status()).toBe(200);
-  expect(await response.json()).toHaveLength(5);
+  expect(quizData.questions).toHaveLength(5);
 });
 
 test('Create new quiz with settings', async ({ page }) => {
@@ -64,9 +65,10 @@ test('Create new quiz with settings', async ({ page }) => {
     page.waitForResponse(`http://localhost:5025/Quiz/GetQuestions?questionAmount=5&category=${categoriesData[0].id}&difficulty=easy&type=multiple`),
     dialog.getByRole('button', { name: 'Begin PubQuiz' }).click(),
   ]);
+  const quizData = await response.json();
 
   expect(response.status()).toBe(200);
-  expect(await response.json()).toHaveLength(5);
+  expect(quizData.questions).toHaveLength(5);
 });
 
 test('Create and complete quiz', async ({ page }) => {
@@ -85,29 +87,29 @@ test('Create and complete quiz', async ({ page }) => {
   const beginButton = settingDialog.getByRole('button', { name: 'Begin PubQuiz' });
   await expect(beginButton).toBeEnabled();
 
-  const [questionResponse] = await Promise.all([
+  const [response] = await Promise.all([
     page.waitForResponse('http://localhost:5025/Quiz/GetQuestions?questionAmount=5&category=&difficulty=&type='),
     beginButton.click(),
   ]);
-  const questions = await questionResponse.json();
+  const quizData = await response.json();
 
-  expect(questionResponse.status()).toBe(200);
-  expect(questions).toHaveLength(5);
+  expect(response.status()).toBe(200);
+  expect(quizData.questions).toHaveLength(5);
 
   await expect(newQuizButton).toBeHidden();
 
   const panels = page.locator('p-panel');
-  await expect(panels).toHaveCount(questions.length);
+  await expect(panels).toHaveCount(quizData.questions.length);
 
   const submitButton = page.getByRole('button', { name: 'Submit Answers' });
   await expect(submitButton).toBeDisabled();
 
-  for (let i = 0; i < questions.length; i++) {
+  for (let i = 0; i < quizData.questions.length; i++) {
     const panel = panels.nth(i);
     await expect(panel).toContainText(`Question ${i + 1}`);
-    await expect(panel).toContainText(questions[i].question);
+    await expect(panel).toContainText(quizData.questions[i].question);
 
-    const answer = questions[i].possibleAnswer[0];
+    const answer = quizData.questions[i].possibleAnswer[0];
     await panel.getByText(answer, { exact: true }).click();
   }
 
@@ -120,10 +122,10 @@ test('Create and complete quiz', async ({ page }) => {
   const answers = await answersResponse.json();
 
   expect(answersResponse.status()).toBe(200);
-  expect(answers).toHaveProperty('totalQuestions', questions.length);
+  expect(answers).toHaveProperty('totalQuestions', quizData.questions.length);
   expect(answers).toHaveProperty('correctAnswers');
   expect(Array.isArray(answers.questionResults)).toBe(true);
-  expect(answers.questionResults).toHaveLength(questions.length);
+  expect(answers.questionResults).toHaveLength(quizData.questions.length);
 
   const resultsDialog = page.locator('p-dialog').filter({ has: page.getByText(`Results: ${answers.correctAnswers}/${answers.totalQuestions} Correct`) });
   await resultsDialog.isVisible();

@@ -31,7 +31,7 @@ public class OpenTdbService
     public async Task<QuizData> GetQuestions(int questionAmount, QuestionCategory? category,
         QuestionDifficulty? difficulty, QuestionType? type)
     {
-        var questionData = new QuizData
+        var quizData = new QuizData
         {
             Questions = []
         };
@@ -69,7 +69,7 @@ public class OpenTdbService
                 .OrderBy(_ => rnd.Next())
                 .ToList();
 
-            questionData.Questions.Add(new Question
+            quizData.Questions.Add(new Question
             {
                 Id = question.Id,
                 QuestionText = WebUtility.HtmlDecode(question.QuestionText),
@@ -78,7 +78,9 @@ public class OpenTdbService
             });
         }
         
-        return questionData;
+        _cache.Set(quizData.Id, quizData.Questions, TimeSpan.FromHours(1));
+        
+        return quizData;
     }
     
     /// <summary>
@@ -95,50 +97,49 @@ public class OpenTdbService
 
         return response.CategoryList.ToList();
     }
-    
+
     /// <summary>
     /// Checks the provided answers against the correct answers in the question data.
     /// Returns a QuizResult object that includes the total number of questions, the number of correct answers, and a list of QuestionResultDetails for each question.
     /// </summary>
-    /// <param name="answers"></param>
+    /// <param name="quizAnswers"></param>
     /// <returns></returns>
-    public QuizResult CheckAnswers(List<AnswerModel> answers)
+    public QuizResult CheckAnswers(QuizAnswerModel quizAnswers)
     {
+        if (!_cache.TryGetValue(quizAnswers.Id, out List<Question>? questions))
+        {
+            throw new Exception("Quiz session expired or not found.");
+        }
+
         var quizResult = new QuizResult
         {
-            TotalQuestions = 0,
+            TotalQuestions = questions!.Count,
             CorrectAnswers = 0,
             QuestionResults = []
         };
-        // var quizResult = new QuizResult
-        // {
-        //     TotalQuestions = _questionData.Questions.Count,
-        //     CorrectAnswers = 0,
-        //     QuestionResults = []
-        // };
-        //
-        // foreach (var answer in answers)
-        // {
-        //     var question = _questionData.Questions.FirstOrDefault(q => q.Id == answer.Id);
-        //     if (question is null)
-        //     {
-        //         continue;
-        //     }
-        //     bool isCorrect = question.CorrectAnswer == answer.Answer;
-        //     if (isCorrect)
-        //     {
-        //         quizResult.CorrectAnswers++;
-        //     }
-        //     
-        //     quizResult.QuestionResults.Add(new QuestionResultDetails
-        //     {
-        //         QuestionId = question.Id,
-        //         QuestionText = question.QuestionText,
-        //         IsCorrect = isCorrect,
-        //         UserAnswer = answer.Answer,
-        //         CorrectAnswer = question.CorrectAnswer
-        //     });
-        // }
+        
+        foreach (var answer in quizAnswers.Answers)
+        {
+            var question = questions.FirstOrDefault(q => q.Id == answer.Id);
+            if (question is null)
+            {
+                continue;
+            }
+            bool isCorrect = question.CorrectAnswer == answer.Answer;
+            if (isCorrect)
+            {
+                quizResult.CorrectAnswers++;
+            }
+            
+            quizResult.QuestionResults.Add(new QuestionResultDetails
+            {
+                QuestionId = question.Id,
+                QuestionText = question.QuestionText,
+                IsCorrect = isCorrect,
+                UserAnswer = answer.Answer,
+                CorrectAnswer = question.CorrectAnswer
+            });
+        }
 
         return quizResult;
     }

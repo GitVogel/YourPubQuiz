@@ -2,6 +2,12 @@
 
 namespace YourPubQuiz.Viewmodels;
 
+public class QuizAnswerModel
+{
+    public string Id { get; set; } = "";
+    public List<AnswerModel> Answers { get; set; } = [];
+}
+
 public class AnswerModel
 {
     [JsonPropertyName("id")]

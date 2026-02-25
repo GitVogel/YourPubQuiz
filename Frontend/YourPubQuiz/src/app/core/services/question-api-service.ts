@@ -5,6 +5,7 @@ import {BackendSettings} from "../settings/backendSettings";
 import {FormGroup} from "@angular/forms";
 import {Answer} from "../models/answer";
 import {QuizData} from "../models/quizData";
+import {QuizAnswers} from "../models/quizAnswers";
 
 @Injectable({
   providedIn: 'root'
@@ -36,8 +37,8 @@ export class QuestionApiService {
       .get<Category[]>(this.baseUrl + '/GetCategories');
   }
 
-  public checkAnswer(answers: Answer[]) {
+  public checkAnswer(quizAnswers: QuizAnswers) {
     return this.httpClient
-      .post(this.baseUrl + '/CheckAnswers', answers);
+      .post(this.baseUrl + '/CheckAnswers', quizAnswers);
   }
 }

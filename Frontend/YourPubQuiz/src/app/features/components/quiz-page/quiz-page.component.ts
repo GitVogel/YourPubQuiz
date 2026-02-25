@@ -26,7 +26,7 @@ export class QuizPageComponent {
 
   quizIsActive: boolean = false;
   showQuizResultDialog: boolean = false;
-  quizData: QuizData = {} as QuizData;
+  quizData: QuizData = { id: "", questions: [] } as QuizData;
   quizResult: QuizResult = {} as QuizResult;
 
   constructor(private readonly questionApiService: QuestionApiService) {
@@ -50,7 +50,7 @@ export class QuizPageComponent {
     /// Shows the quiz results by opening the results dialog and resetting the quiz state.
   public showQuizResults(result: QuizResult) {
     this.quizResult = result;
-    this.quizData = {} as QuizData;
+    this.quizData = { id: "", questions: [] } as QuizData;
     this.quizIsActive = false;
     this.showQuizResultDialog = true;
   }

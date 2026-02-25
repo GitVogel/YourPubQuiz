@@ -64,12 +64,12 @@ public class QuizController : ControllerBase
     /// <summary>
     /// Checks the provided answers against the correct answers stored in the OpenTdbService and returns a QuizResultModel.
     /// </summary>
-    /// <param name="answers"></param>
+    /// <param name="quizAnswers"></param>
     /// <returns>List of QuestionResult</returns>
     [HttpPost("[action]")]
-    public QuizResultModel CheckAnswers([FromBody] List<AnswerModel> answers)
+    public QuizResultModel CheckAnswers([FromBody] QuizAnswerModel quizAnswers)
     {
-        var result = _openTdbService.CheckAnswers(answers);
+        var result = _openTdbService.CheckAnswers(quizAnswers);
 
         return new QuizResultModel
         {
