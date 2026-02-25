@@ -13,5 +13,5 @@
 </div>
 
 <app-quiz-dialog (newQuizCreated)="getNewQuestions($event)"></app-quiz-dialog>
-<app-questions [allQuestions]="questions" [isActive]="quizIsActive" (quizResults)="showQuizResults($event)"></app-questions>
+<app-questions [quizData]="quizData" [isActive]="quizIsActive" (quizResults)="showQuizResults($event)"></app-questions>
 <app-results-dialog [quizResult]="quizResult" [showResults]="showQuizResultDialog"></app-results-dialog>

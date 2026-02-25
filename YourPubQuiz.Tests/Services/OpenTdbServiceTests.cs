@@ -1,10 +1,10 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using Moq.Protected;
 using YourPubQuiz.Models;
 using YourPubQuiz.Services;
-using YourPubQuiz.Singletons;
 using YourPubQuiz.Viewmodels;
 
 namespace YourPubQuiz.Test.Services;
@@ -12,13 +12,14 @@ namespace YourPubQuiz.Test.Services;
 public class OpenTdbServiceTests
 {
     private OpenTdbService _openTdbService;
-    private QuestionData _questionData;
+    private QuizData _quizData;
     private Mock<HttpMessageHandler> _httpMessageHandlerMock;
+    private Mock<IMemoryCache> _memoryCacheMock;
 
     [SetUp]
     public void Setup()
     {
-        _questionData = new QuestionData
+        _quizData = new QuizData
         {
             Questions =
             [
@@ -43,6 +44,8 @@ public class OpenTdbServiceTests
         _httpMessageHandlerMock = new Mock<HttpMessageHandler>();
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         
+        _memoryCacheMock = new Mock<IMemoryCache>();
+        
         var mockCategories = new
         {
             trivia_categories = new[]
@@ -66,7 +69,7 @@ public class OpenTdbServiceTests
                 Content = JsonContent.Create(mockCategories)
             }));
         
-        _openTdbService = new OpenTdbService(httpClient, _questionData);
+        _openTdbService = new OpenTdbService(httpClient, _memoryCacheMock.Object);
     }
 
     [Test] 
@@ -173,11 +176,19 @@ public class OpenTdbServiceTests
     [Test]
     public void Test_CheckAnswers_AllCorrect()
     {
-        var userAnswers = new List<AnswerModel>
+        var quizId = "test-quiz-id";
+        var userAnswers = new QuizAnswerModel
         {
-            new() { Id = "111", Answer = "CorrectAnswer1" },
-            new () { Id = "222", Answer = "False" }
+            Id = quizId,
+            Answers = new List<AnswerModel>
+            {
+                new() { Id = "111", Answer = "CorrectAnswer1" },
+                new() { Id = "222", Answer = "False" }
+            }
         };
+
+        object questions = _quizData.Questions;
+        _memoryCacheMock.Setup(m => m.TryGetValue(quizId, out questions)).Returns(true);
 
         var result = _openTdbService.CheckAnswers(userAnswers);
 
@@ -190,11 +201,19 @@ public class OpenTdbServiceTests
     [Test]
     public void Test_CheckAnswers_SomeCorrect()
     {
-        var userAnswers = new List<AnswerModel>
+        var quizId = "test-quiz-id";
+        var userAnswers = new QuizAnswerModel
         {
-            new() { Id = "111", Answer = "WrongAnswer1" },
-            new () { Id = "222", Answer = "False" }
+            Id = quizId,
+            Answers = new List<AnswerModel>
+            {
+                new() { Id = "111", Answer = "WrongAnswer1" },
+                new() { Id = "222", Answer = "False" }
+            }
         };
+
+        object questions = _quizData.Questions;
+        _memoryCacheMock.Setup(m => m.TryGetValue(quizId, out questions)).Returns(true);
 
         var result = _openTdbService.CheckAnswers(userAnswers);
 
@@ -207,11 +226,19 @@ public class OpenTdbServiceTests
     [Test]
     public void Test_CheckAnswers_NoneCorrect()
     {
-        var userAnswers = new List<AnswerModel>
+        var quizId = "test-quiz-id";
+        var userAnswers = new QuizAnswerModel
         {
-            new() { Id = "111", Answer = "WrongAnswer3" },
-            new () { Id = "222", Answer = "True" }
+            Id = quizId,
+            Answers = new List<AnswerModel>
+            {
+                new() { Id = "111", Answer = "WrongAnswer3" },
+                new() { Id = "222", Answer = "True" }
+            }
         };
+
+        object questions = _quizData.Questions;
+        _memoryCacheMock.Setup(m => m.TryGetValue(quizId, out questions)).Returns(true);
 
         var result = _openTdbService.CheckAnswers(userAnswers);
 
@@ -219,5 +246,18 @@ public class OpenTdbServiceTests
         Assert.That(result.CorrectAnswers, Is.EqualTo(0));
         Assert.That(result.QuestionResults.Count, Is.EqualTo(2));
         Assert.That(result.QuestionResults.All(r => r.IsCorrect), Is.False);
+    }
+
+    [Test]
+    public void Test_CheckAnswers_SessionExpired()
+    {
+        var quizId = "expired-id";
+        var userAnswers = new QuizAnswerModel { Id = quizId };
+        
+        object? questions = null;
+        _memoryCacheMock.Setup(m => m.TryGetValue(quizId, out questions)).Returns(false);
+
+        var exception = Assert.Throws<Exception>(() => _openTdbService.CheckAnswers(userAnswers));
+        Assert.That(exception.Message, Is.EqualTo("Quiz session expired or not found."));
     }
 }

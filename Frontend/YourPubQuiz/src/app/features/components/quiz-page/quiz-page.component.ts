@@ -3,10 +3,10 @@ import {FormGroup, FormsModule} from "@angular/forms";
 import {QuestionApiService} from "../../../core/services/question-api-service";
 import {Button} from "primeng/button";
 import {QuizDialogComponent} from "../quiz-dialog/quiz-dialog.component";
-import {Question} from "../../../core/models/question";
 import {QuestionsComponent} from "../questions/questions.component";
 import {ResultsDialogComponent} from "../results-dialog/results-dialog.component";
 import {QuizResult} from "../../../core/models/quizResult";
+import {QuizData} from "../../../core/models/quizData";
 
 @Component({
   selector: 'app-quiz-page',
@@ -26,7 +26,7 @@ export class QuizPageComponent {
 
   quizIsActive: boolean = false;
   showQuizResultDialog: boolean = false;
-  questions: Question[] = [];
+  quizData: QuizData = { id: "", questions: [] } as QuizData;
   quizResult: QuizResult = {} as QuizResult;
 
   constructor(private readonly questionApiService: QuestionApiService) {
@@ -41,8 +41,8 @@ export class QuizPageComponent {
     /// Fetches new questions from the backend based on the quiz settings and activates the quiz.
   public getNewQuestions(quizSetting: FormGroup)
   {
-    this.questionApiService.getQuestions(quizSetting).subscribe(questions => {
-      this.questions = questions;
+    this.questionApiService.getQuestions(quizSetting).subscribe(quizData => {
+      this.quizData = quizData;
       this.quizIsActive = true;
     });
   }
@@ -50,7 +50,7 @@ export class QuizPageComponent {
     /// Shows the quiz results by opening the results dialog and resetting the quiz state.
   public showQuizResults(result: QuizResult) {
     this.quizResult = result;
-    this.questions = [];
+    this.quizData = { id: "", questions: [] } as QuizData;
     this.quizIsActive = false;
     this.showQuizResultDialog = true;
   }

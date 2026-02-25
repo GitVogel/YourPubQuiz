@@ -27,17 +27,21 @@ public class QuizController : ControllerBase
     /// <exception cref="Exception"></exception>
     [HttpGet]
     [Route("[action]")]
-    public async Task<List<QuestionModel>> GetQuestions([FromQuery] int questionAmount, QuestionCategory? category,
+    public async Task<QuizDataModel> GetQuestions([FromQuery] int questionAmount, QuestionCategory? category,
         QuestionDifficulty? difficulty, QuestionType? type)
     {
-        var questions = await _openTdbService.GetQuestions(questionAmount, category, difficulty, type);
+        var quizData = await _openTdbService.GetQuestions(questionAmount, category, difficulty, type);
 
-        return questions.Select(q => new QuestionModel
+        return new QuizDataModel
         {
-            Id = q.Id,
-            Question = q.QuestionText,
-            PossibleAnswer = q.AllAnswers
-        }).ToList();
+            Id = quizData.Id,
+            Questions = quizData.Questions.Select(q => new QuestionModel
+            {
+                Id = q.Id,
+                Question = q.QuestionText,
+                PossibleAnswer = q.AllAnswers
+            }).ToList()
+        };
     }
 
     /// <summary>
@@ -60,12 +64,12 @@ public class QuizController : ControllerBase
     /// <summary>
     /// Checks the provided answers against the correct answers stored in the OpenTdbService and returns a QuizResultModel.
     /// </summary>
-    /// <param name="answers"></param>
+    /// <param name="quizAnswers"></param>
     /// <returns>List of QuestionResult</returns>
     [HttpPost("[action]")]
-    public QuizResultModel CheckAnswers([FromBody] List<AnswerModel> answers)
+    public QuizResultModel CheckAnswers([FromBody] QuizAnswerModel quizAnswers)
     {
-        var result = _openTdbService.CheckAnswers(answers);
+        var result = _openTdbService.CheckAnswers(quizAnswers);
 
         return new QuizResultModel
         {

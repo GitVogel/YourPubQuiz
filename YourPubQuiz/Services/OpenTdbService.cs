@@ -1,8 +1,8 @@
 ﻿using System.Net;
+using Microsoft.Extensions.Caching.Memory;
 using YourPubQuiz.Models;
 using YourPubQuiz.OpenTdbApi;
 using YourPubQuiz.Response;
-using YourPubQuiz.Singletons;
 using YourPubQuiz.Viewmodels;
 
 namespace YourPubQuiz.Services;
@@ -10,12 +10,12 @@ namespace YourPubQuiz.Services;
 public class OpenTdbService
 {
     private readonly HttpClient _client;
-    private readonly QuestionData _questionData;
+    private readonly IMemoryCache _cache;
 
-    public OpenTdbService(HttpClient client, QuestionData questionData)
+    public OpenTdbService(HttpClient client, IMemoryCache cache)
     {
         _client = client;
-        _questionData = questionData;
+        _cache = cache;
     }
 
     /// <summary>
@@ -28,10 +28,13 @@ public class OpenTdbService
     /// <param name="type"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public async Task<List<Question>> GetQuestions(int questionAmount, QuestionCategory? category,
+    public async Task<QuizData> GetQuestions(int questionAmount, QuestionCategory? category,
         QuestionDifficulty? difficulty, QuestionType? type)
     {
-        _questionData.Questions.Clear();
+        var quizData = new QuizData
+        {
+            Questions = []
+        };
 
         IsValidQuestionAmount(questionAmount);
         var url = $"https://opentdb.com/api.php?amount={questionAmount}";
@@ -66,7 +69,7 @@ public class OpenTdbService
                 .OrderBy(_ => rnd.Next())
                 .ToList();
 
-            _questionData.Questions.Add(new Question
+            quizData.Questions.Add(new Question
             {
                 Id = question.Id,
                 QuestionText = WebUtility.HtmlDecode(question.QuestionText),
@@ -75,7 +78,9 @@ public class OpenTdbService
             });
         }
         
-        return _questionData.Questions;
+        _cache.Set(quizData.Id, quizData.Questions, TimeSpan.FromHours(1));
+        
+        return quizData;
     }
     
     /// <summary>
@@ -92,25 +97,30 @@ public class OpenTdbService
 
         return response.CategoryList.ToList();
     }
-    
+
     /// <summary>
     /// Checks the provided answers against the correct answers in the question data.
     /// Returns a QuizResult object that includes the total number of questions, the number of correct answers, and a list of QuestionResultDetails for each question.
     /// </summary>
-    /// <param name="answers"></param>
+    /// <param name="quizAnswers"></param>
     /// <returns></returns>
-    public QuizResult CheckAnswers(List<AnswerModel> answers)
+    public QuizResult CheckAnswers(QuizAnswerModel quizAnswers)
     {
+        if (!_cache.TryGetValue(quizAnswers.Id, out List<Question>? questions))
+        {
+            throw new Exception("Quiz session expired or not found.");
+        }
+
         var quizResult = new QuizResult
         {
-            TotalQuestions = _questionData.Questions.Count,
+            TotalQuestions = questions!.Count,
             CorrectAnswers = 0,
             QuestionResults = []
         };
         
-        foreach (var answer in answers)
+        foreach (var answer in quizAnswers.Answers)
         {
-            var question = _questionData.Questions.FirstOrDefault(q => q.Id == answer.Id);
+            var question = questions.FirstOrDefault(q => q.Id == answer.Id);
             if (question is null)
             {
                 continue;
